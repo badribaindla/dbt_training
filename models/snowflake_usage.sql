@@ -10,7 +10,7 @@
                 AND CURRENT_DATE()
             GROUP BY
                 1
-        ),
+        ), 
         wh_kpis as (
             select
                 job.warehouse_name,
