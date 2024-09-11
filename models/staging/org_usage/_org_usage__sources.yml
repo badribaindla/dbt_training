@@ -1,0 +1,8 @@
+version: 2
+
+sources:
+  - name: organization_usage
+    database: snowflake
+    schema: organization_usage
+    tables:
+      - name: warehouse_metering_history
