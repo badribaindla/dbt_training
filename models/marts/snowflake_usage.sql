@@ -4,7 +4,7 @@
                 ROUND(SUM(credits_used_compute), 0) AS compute_credits_used,
                 ROUND(SUM(credits_used_cloud_services), 0) cloud_services_credits_used
             FROM
-                {{source('ORGANIZATION_USAGE','WAREHOUSE_METERING_HISTORY')}}
+                {{source('organization_usage','warehouse_metering_history')}}
             WHERE
                 TO_DATE(START_TIME) BETWEEN CURRENT_DATE()-30
                 AND CURRENT_DATE()
@@ -40,7 +40,7 @@
                     end
                 ) / job_count as pct_jobs_spilled_remote
             from
-                {{source('ACCOUNT_USAGE','QUERY_HISTORY')}} job
+                {{source('account_usage','query_history')}} job
             where
                 1 = 1
                 and job.cluster_number is not null
@@ -105,7 +105,7 @@
                 + 1 as type,
                 q.*
             from
-                {{source('ACCOUNT_USAGE','QUERY_HISTORY')}} q
+                {{source('account_usage','query_history')}} q
             where
                 TO_DATE(start_time) BETWEEN CURRENT_DATE()-30
                 AND CURRENT_DATE()
@@ -130,7 +130,7 @@
                 -1 as type,
                 q.*
             from
-                {{source('ACCOUNT_USAGE','QUERY_HISTORY')}} q
+                {{source('account_usage','query_history')}} q
             where
                 TO_DATE(start_time) BETWEEN CURRENT_DATE()-30
                 AND CURRENT_DATE()
@@ -166,7 +166,7 @@
                 warehouse_name,
                 sum(credits_used) as credits_used_30_days
             from
-                {{source('ORGANIZATION_USAGE','WAREHOUSE_METERING_HISTORY')}}
+                {{source('organization_usage','warehouse_metering_history')}}
             where
                 TO_DATE(start_time) BETWEEN CURRENT_DATE()-30
                 AND CURRENT_DATE()
