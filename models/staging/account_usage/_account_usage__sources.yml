@@ -6,3 +6,12 @@ sources:
     schema: account_usage
     tables:
       - name: query_history
+
+models:
+  - name: stg_account_usage__query_history
+    columns:
+      - name: query_id
+        tests:
+          - unique
+          - not_null
+              
