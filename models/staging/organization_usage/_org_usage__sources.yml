@@ -8,10 +8,3 @@ sources:
       - name: warehouse_metering_history
 
 
-models:
-  - name: stg_organization_usage__warehouse_metering_history
-    columns:
-      - name: warehouse_id
-        tests:
-          - unique
-          - not_null

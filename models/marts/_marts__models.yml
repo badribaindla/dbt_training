@@ -1,0 +1,11 @@
+models:
+  - name: snowflake_usage
+    description: this is a test to create the documentation. 
+    columns:
+      - name: warehouse_name
+        # tests:
+        #   - relationships:
+        #       field: warehouse_name
+        #       to: ref('stg_organization_usage__warehouse_metering_history')
+
+
