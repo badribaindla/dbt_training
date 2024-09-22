@@ -1,16 +1,16 @@
     with wh_metering as (
-            SELECT
+            select
                 warehouse_name,
-                ROUND(SUM(credits_used_compute), 0) AS compute_credits_used,
-                ROUND(SUM(credits_used_cloud_services), 0) cloud_services_credits_used
-            FROM
-                "SNOWFLAKE"."ORGANIZATION_USAGE"."WAREHOUSE_METERING_HISTORY"
-            WHERE
-                TO_DATE(START_TIME) BETWEEN CURRENT_DATE()-30
-                AND CURRENT_DATE()
-            GROUP BY
+                round(sum(credits_used_compute), 0) as compute_credits_used,
+                round(sum(credits_used_cloud_services), 0) cloud_services_credits_used
+            from
+                {{ ref('stg_organization_usage__warehouse_metering_history') }}
+            where
+                to_date(start_time) between current_date()-30
+                and current_date()
+            group by
                 1
-        ),
+        ), 
         wh_kpis as (
             select
                 job.warehouse_name,
@@ -40,12 +40,12 @@
                     end
                 ) / job_count as pct_jobs_spilled_remote
             from
-                "SNOWFLAKE"."ACCOUNT_USAGE"."QUERY_HISTORY" job
+               {{ ref('stg_account_usage__query_history') }} job
             where
                 1 = 1
                 and job.cluster_number is not null
-                and TO_DATE(job.start_time) BETWEEN CURRENT_DATE()-30
-                AND CURRENT_DATE()
+                and to_date(job.start_time) between current_date()-30
+                and current_date()
             group by 1,2
         ),
         cat_scores as (
@@ -105,24 +105,24 @@
                 + 1 as type,
                 q.*
             from
-                "SNOWFLAKE"."ACCOUNT_USAGE"."QUERY_HISTORY" q
+                {{ ref('stg_account_usage__query_history') }} q
             where
-                TO_DATE(start_time) BETWEEN CURRENT_DATE()-30
-                AND CURRENT_DATE()
+                to_date(start_time) between current_date()-30
+                and current_date()
                 and query_type in (
-                    'COPY',
-                    'INSERT',
-                    'MERGE',
-                    'UNLOAD',
-                    'RECLUSTER',
-                    'SELECT',
-                    'DELETE',
-                    'CREATE_TABLE_AS_SELECT',
-                    'UPDATE'
+                    'copy',
+                    'insert',
+                    'merge',
+                    'unload',
+                    'recluster',
+                    'select',
+                    'delete',
+                    'create_table_as_select',
+                    'update'
                 )
                 and cluster_number is not null
                 and warehouse_name is not null
-                and warehouse_name not like '%COMPUTE_SERVICE%'
+                and warehouse_name not like '%compute_service%'
             union all
             select
                 end_time as usage_at,
@@ -130,24 +130,24 @@
                 -1 as type,
                 q.*
             from
-                "SNOWFLAKE"."ACCOUNT_USAGE"."QUERY_HISTORY" q
+               {{ ref('stg_account_usage__query_history') }} q
             where
-                TO_DATE(start_time) BETWEEN CURRENT_DATE()-30
-                AND CURRENT_DATE()
+                to_date(start_time) between current_date()-30
+                and current_date()
                 and query_type in (
-                    'COPY',
-                    'INSERT',
-                    'MERGE',
-                    'UNLOAD',
-                    'RECLUSTER',
-                    'SELECT',
-                    'DELETE',
-                    'CREATE_TABLE_AS_SELECT',
-                    'UPDATE'
+                    'copy',
+                    'insert',
+                    'merge',
+                    'unload',
+                    'recluster',
+                    'select',
+                    'delete',
+                    'create_table_as_select',
+                    'update'
                 )
                 and cluster_number is not null
                 and warehouse_name is not null
-                and warehouse_name not like '%COMPUTE_SERVICE%'
+                and warehouse_name not like '%compute_service%'
         ),
         cte_concurrency_prep as (
             select
@@ -166,10 +166,10 @@
                 warehouse_name,
                 sum(credits_used) as credits_used_30_days
             from
-                "SNOWFLAKE"."ACCOUNT_USAGE"."WAREHOUSE_METERING_HISTORY"
+                {{ ref('stg_organization_usage__warehouse_metering_history') }}
             where
-                TO_DATE(start_time) BETWEEN CURRENT_DATE()-30
-                AND CURRENT_DATE()
+                to_date(start_time) between current_date()-30
+                and current_date()
             group by
                 1
         ),
@@ -179,7 +179,7 @@
                 credits_used_30_days,
                 avg_highwater_mark_of_concurrency_per_minute,
                 highwater_mark_of_concurrency,
-                'Warehouse ' || warehouse_name || ' has concurrency highwater mark of AVG: ' || avg_highwater_mark_of_concurrency_per_minute || ' MAX: ' || highwater_mark_of_concurrency || ' and consumed ' || credits_used_30_days || ' credits in the last 30 days and is potentially underutilized' finding
+                'warehouse ' || warehouse_name || ' has concurrency highwater mark of avg: ' || avg_highwater_mark_of_concurrency_per_minute || ' max: ' || highwater_mark_of_concurrency || ' and consumed ' || credits_used_30_days || ' credits in the last 30 days and is potentially underutilized' finding
             from
                 (
                     select
@@ -200,8 +200,8 @@
                 )
         )
     select
-        CURRENT_DATE()-30 AS JOB_START_DATE,
-        CURRENT_DATE() AS JOB_END_DATE,
+        current_date()-30 as job_start_date,
+        current_date() as job_end_date,
         coalesce(
             wh_scoring.warehouse_name,
             wh_utilization.warehouse_name
