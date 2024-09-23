@@ -1,0 +1,8 @@
+models:
+  - name: stg_account_usage__query_history
+    columns:
+      - name: query_id
+        tests:
+          - unique
+          - not_null
+          - dbt_utils.not_empty_string
