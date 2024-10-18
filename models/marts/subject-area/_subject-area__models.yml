@@ -1,0 +1,29 @@
+version: 2
+
+models:
+  - name: snowflake_usage
+    # tests:
+    #   - test_validate_tags  # Add the custom test here
+    description: this is a model level description
+    config:
+      # tags: #model level classification & categorization
+      #   - restricted
+      #   - pii
+      grants: 
+        select: ['sysadmin']
+    meta:
+     owner:  "@bshahbaz"
+    columns:
+       - name: warehouse_name
+         description: this is a column level description
+         tests:
+           - not_null
+           - dbt_utils.not_empty_string
+           - tag_validation:  # Add the custom tag validation test here
+              tags:
+                - confidential
+                - pii 
+        #  meta:
+        #   tags: #table level classification & categorization
+        #     - confidential
+        #     - pii 

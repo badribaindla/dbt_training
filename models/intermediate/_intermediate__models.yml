@@ -1,4 +1,7 @@
-version: 2
-models:
-
-          
+ version: 2
+# models:
+#   - name: 
+#     config:
+#     description: 
+#     columns:
+#       - name:      

@@ -35,6 +35,10 @@ clean-targets:         # directories to be removed by `dbt clean`
 # continue to be built as views. These settings can be overridden in the individual model files
 # using the `{{ config(...) }}` macro.
 
+vars:
+  allowed_tags: ['public', 'internal', 'confidential', 'restricted', 'mission_critical']
+
+
 models:
   my_new_project:
     # Applies to all files under models/example/
@@ -42,3 +46,5 @@ models:
       +materialized: view
     staging:
       +materialized: view
+
+

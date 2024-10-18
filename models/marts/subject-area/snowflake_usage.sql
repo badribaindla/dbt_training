@@ -1,3 +1,6 @@
+{{ validate_column_tags('snowflake_usage') }}
+
+    
     with wh_metering as (
             select
                 warehouse_name,
